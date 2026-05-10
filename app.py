@@ -250,7 +250,7 @@ plt.rcParams.update({
 # ─────────────────────────────────────────────
 @st.cache_data
 def load_data():
-    df = pd.read_csv("Datasets/CoffeeShopSales-cleaned.csv")
+    df = pd.read_csv("CoffeeShopSales-cleaned.csv")
     df["date"] = pd.to_datetime(df["date"])
     return df
 
