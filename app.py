@@ -251,7 +251,7 @@ plt.rcParams.update({
 @st.cache_data
 def load_data():
     df = pd.read_csv("CoffeeShopSales-cleaned.csv")
-    df["date"] = pd.to_datetime(df["date"])
+    df["transaction_date"] = pd.to_datetime(df["transaction_date"])
     return df
 
 df = load_data()
@@ -310,7 +310,7 @@ st.markdown("""
 #  KPIs
 # ─────────────────────────────────────────────
 total_sales   = int(filtered_df["transaction_qty"].sum())
-total_revenue = filtered_df["transaction_amt"].sum()
+total_revenue = filtered_df["total_amount"].sum()
 total_orders  = filtered_df["transaction_id"].nunique()
 avg_order_val = total_revenue / total_orders if total_orders else 0
 
@@ -348,17 +348,17 @@ with tab1:
 
         monthly = (
             filtered_df
-            .groupby(filtered_df["date"].dt.to_period("M"))["transaction_amt"]
+            .groupby(filtered_df["transaction_date"].dt.to_period("M"))["total_amount"]
             .sum()
             .reset_index()
         )
-        monthly["date"] = monthly["date"].dt.to_timestamp()
-        monthly = monthly.sort_values("date")
+        monthly["transaction_date"] = monthly["transaction_date"].dt.to_timestamp()
+        monthly = monthly.sort_values("transaction_date")
 
         fig, ax = plt.subplots(figsize=(8, 3.6))
-        ax.fill_between(monthly["date"], monthly["transaction_amt"],
+        ax.fill_between(monthly["total_amount"], monthly["total_amount"],
                         alpha=0.18, color=CARAMEL)
-        ax.plot(monthly["date"], monthly["transaction_amt"],
+        ax.plot(monthly["transaction_date"], monthly["total_amount"],
                 color=CARAMEL, linewidth=2.5, marker="o",
                 markersize=5, markerfacecolor=ACCENT, markeredgecolor=ACCENT)
         ax.yaxis.set_major_formatter(plt.FuncFormatter(lambda x, _: f"₹{x/1000:.0f}K"))
@@ -377,7 +377,7 @@ with tab1:
 
         store_rev = (
             filtered_df
-            .groupby("store_location")["transaction_amt"]
+            .groupby("store_location")["total_amount"]
             .sum()
             .sort_values(ascending=True)
         )
@@ -402,7 +402,7 @@ with tab1:
 
     cat_sales = (
         filtered_df
-        .groupby("product_category")["transaction_amt"]
+        .groupby("product_category")["total_amount"]
         .sum()
         .sort_values(ascending=False)
     )
